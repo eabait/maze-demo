@@ -6,7 +6,6 @@ canvas {
     border-style: dashed;
     border-width: 2px;
     border-color: #69D2E7;
-    position: relative;
 }
 
 .msg {

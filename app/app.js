@@ -41,21 +41,14 @@ define([
             soundManager.onready(function() { 
                 var avatar = loader.addImage('img/avatar.png');
                 loader.addSound('marioMusic', 'sound/mario_game.mp3');
-                loader.addSound('marioMusic', 'sound/mario_game.mp3');
-                loader.addSound('marioMusic', 'sound/mario_game.mp3');
-                loader.addSound('marioMusic', 'sound/mario_game.mp3');
-                loader.addSound('marioMusic', 'sound/mario_game.mp3');
-                loader.addSound('marioMusic', 'sound/mario_game.mp3');
-                loader.addSound('marioMusic', 'sound/mario_game.mp3');
-                
-                
-                          
+     
                 loader.addProgressListener(function(e) { 
-                    menu.showProgress((e.completedCount / 8) * 100);
+                    menu.showProgress(e.completedCount / e.totalCount);
                 });
 
                 loader.addCompletionListener(function() { 
-                   game.loadContent(avatar); 
+                    menu.showProgress(100);
+                    game.loadContent(avatar); 
                 });
 
                 loader.start();

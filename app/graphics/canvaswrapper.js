@@ -31,14 +31,19 @@ define([
             getCursorPosition : function(e) {
                 var x, y, resX, resY;
 
-                if(e.offsetX) {
-                    x = e.offsetX;
-                    y = e.offsetY;
-                } else 
-                    if(e.layerX) {
-                        x = e.layerX;
-                        y = e.layerY;
-                    }
+                if(e.x) {
+                    x = e.x;
+                    y = e.y;
+                } else {
+                    /* FIREFOX */
+                    x = e.clientX + document.body.scrollLeft +
+                        document.documentElement.scrollLeft;
+                    y = e.clientY + document.body.scrollTop +
+                        document.documentElement.scrollTop; 
+                }
+                    
+                x -= this.canvas.offsetLeft;
+                y -= this.canvas.offsetTop;
 
                 resY = Math.floor(y / Config.tileSize);
                 resX = Math.floor(x / Config.tileSize);
