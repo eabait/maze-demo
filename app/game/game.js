@@ -1,28 +1,22 @@
 define([
     'core/config',
     'core/publisher',
-    'game/map',
-    'game/avatar',
+    'graphics/canvaswrapper',
+    'graphics/map',
+    'graphics/avatar',
     'ai/ai'
     ],
-    function(Config, Publisher, Map, Avatar, AI) {
-        var canvas;
-        var canvasContext;
-        var canvasBuffer;
-        var canvasBufferContext;
-        
-        var canvasAvatarBuffer;
-
-        var map = null;
-        var path = null;
-        var avatar = null;
-        var audio = null;
-        var gameLoop;
-        var started = false;
+    function(Config, Publisher, CanvasWrapper, Map, Avatar, AI) {
+        var map = null,
+            path = null,
+            avatar = null,
+            audio = null,
+            gameLoop,
+            started = false;
 
         //This variable is used for smoothing the Avatar
         //animation
-        var step=3;
+        var step=6;
         //Next avatar position of the calculated path
         var next = 1;
 
@@ -30,47 +24,29 @@ define([
          * Game object
          */
         var Game = function () {
-            canvas = document.getElementById('canvas');
+            //audio = new Audio('sound/mario_game.mp3');
+            CanvasWrapper.init('canvas');
 
-            if (canvas && canvas.getContext) {
-                canvasContext = canvas.getContext('2d');
-                //Maze canvas buffer
-                canvasBuffer = document.createElement('canvas');
-                canvasBuffer.width = canvas.width;
-                canvasBuffer.height = canvas.height;
-                canvasBufferContext = canvasBuffer.getContext('2d');
+            //Initialize objects
+            map = new Map();
+            avatar = new Avatar();
 
-                //Avatar canvas buffer
-                canvasAvatarBuffer = document.createElement('canvas');
-                canvasAvatarBuffer.width = canvas.width;
-                canvasAvatarBuffer.height = canvas.height;
+            step = Config.maxStep;
 
-                audio = new Audio('sound/mario_game.mp3');
-
-                //Initialize objects
-                map = new Map();
-                avatar = new Avatar(canvasAvatarBuffer);
-
-                step = Config.maxStep;
-
-                //add subscriber methods to this object (mixin)
-                Publisher.makePublisher(this);
-
-                this.loadContent();
-
-                return true;
-            }
-            return false;
+            //add subscriber methods to this object (mixin)
+            Publisher.makePublisher(this);
         };
 
         /**
 	 * Load media contents and draw initial map
 	 */
-        Game.prototype.loadContent = function () {
-            map.init(canvas);
-            
+        Game.prototype.loadContent = function (img) {            
             //initial map draw
-            map.drawInitialMap(canvasContext);
+            map.drawInitialMap();
+            //bind mouse event handlers
+            map.bindEvents();
+            
+            avatar.setImage(img);
 
             //whenever the user clicks on the map
             //start the game loop
@@ -95,17 +71,17 @@ define([
                     pos[3], 
                     Config.algorithm
                 );
-                audio.play();
+                //this.startMusic();
                 gameLoop = setInterval(runGameLoop, Config.interval);
             }
         }
 
         Game.prototype.startMusic = function() {
-            audio.play();
+            soundManager.play('marioMusic', {});
         }
 
         Game.prototype.stopMusic = function() {
-            audio.pause();
+            soundManager.stop('marioMusic');
         }
 
         Game.prototype.setAlgorithm = function(a) {
@@ -135,9 +111,9 @@ define([
             //Once finished, stop the loop
             if (next >= path.length) {
                 clearInterval(gameLoop);
-                audio.pause();
+                //this.stopMusic();
                 started = false;
-                map.drawEnding(canvasContext);
+                map.drawEnding();
                 next = 1;
             }
         }
@@ -153,13 +129,13 @@ define([
                 x1 = path[next].x,
                 y1 = path[next].y;
 
-                map.draw(canvasBufferContext);
+                map.draw();
 
                 avatar.move(x0, y0, x1, y1, step);
 
                 //Copy buffer to the real canvas
-                canvasContext.drawImage(canvasBuffer, 0, 0);
-                canvasContext.drawImage(avatar.canvas, avatar.currX, avatar.currY);
+                CanvasWrapper.copyBufferToCanvas(map.canvas, 0, 0);
+                CanvasWrapper.copyBufferToCanvas(avatar.canvas, avatar.currX, avatar.currY);
             }
         }
         

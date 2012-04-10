@@ -11,6 +11,7 @@ define(function () {
         interval: 100,
         tileSize: 30,
         algorithm: 'smart',
+        menuColor: '#000',
         wallColor: '#A7DBD8',
         emptyColor: '#E0E4CC',
         entryColor: '#F38630',
