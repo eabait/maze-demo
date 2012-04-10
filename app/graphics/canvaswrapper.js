@@ -47,6 +47,11 @@ define([
                     x : resX,
                     y : resY
                 };
+            },
+            
+            clear : function() {
+                var c = this.canvas;
+                this.canvasContext.clearRect(0, 0, c.width, c.height);
             }
             
         };

@@ -10,13 +10,12 @@ define([
         var map = null,
             path = null,
             avatar = null,
-            audio = null,
             gameLoop,
             started = false;
 
         //This variable is used for smoothing the Avatar
         //animation
-        var step=6;
+        var step=1;
         //Next avatar position of the calculated path
         var next = 1;
 
@@ -72,7 +71,8 @@ define([
                     Config.algorithm
                 );
                 //this.startMusic();
-                gameLoop = setInterval(runGameLoop, Config.interval);
+                //gameLoop = setInterval(runGameLoop, Config.interval);
+                runGameLoop();
             }
         }
 
@@ -94,23 +94,24 @@ define([
         var runGameLoop = function () {
             update();
             draw();
+            requestAnimationFrame(runGameLoop);
         }
 
         /**
 	 * Updates the game state
 	 */
         var update = function () {
-            if (step === 1)
+            if (step === 1) {
                 next = next + 1;
-
-            if (step <= 1)
+            }
+            if (step <= 1) {
                 step = Config.maxStep;
-            else
+            } else {
                 step = step - 1;
-
+            }
             //Once finished, stop the loop
             if (next >= path.length) {
-                clearInterval(gameLoop);
+                cancelAnimationFrame(gameLoop);
                 //this.stopMusic();
                 started = false;
                 map.drawEnding();
@@ -125,9 +126,9 @@ define([
         var draw = function () {
             if (started) {
                 var x0 = path[next-1].x,
-                y0 = path[next-1].y,
-                x1 = path[next].x,
-                y1 = path[next].y;
+                    y0 = path[next-1].y,
+                    x1 = path[next].x,
+                    y1 = path[next].y;
 
                 map.draw();
 
