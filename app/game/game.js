@@ -1,12 +1,13 @@
 define([
     'core/config',
     'core/publisher',
-    'graphics/canvaswrapper',
+    'canvaswrapper',
     'graphics/map',
     'graphics/avatar',
-    'ai/ai'
+    'ai/ai',
+    'soundmanager'
     ],
-    function(Config, Publisher, CanvasWrapper, Map, Avatar, AI) {
+    function(Config, Publisher, CanvasWrapper, Map, Avatar, AI, SM) {
         var map = null,
             path = null,
             avatar = null,
@@ -23,9 +24,6 @@ define([
          * Game object
          */
         var Game = function () {
-            //audio = new Audio('sound/mario_game.mp3');
-            CanvasWrapper.init('canvas');
-
             //Initialize objects
             map = new Map();
             avatar = new Avatar();
@@ -49,7 +47,7 @@ define([
 
             //whenever the user clicks on the map
             //start the game loop
-            map.subscribe(this.startGame, 'startgame');
+            map.subscribe('startgame', this.startGame, this);
         };
 
         /**
@@ -70,18 +68,18 @@ define([
                     pos[3], 
                     Config.algorithm
                 );
-                //this.startMusic();
+                this.startMusic();
                 //gameLoop = setInterval(runGameLoop, Config.interval);
-                runGameLoop();
+                this.runGameLoop();
             }
         }
 
         Game.prototype.startMusic = function() {
-            soundManager.play('marioMusic', {});
+            SM.play('marioMusic', {});
         }
 
         Game.prototype.stopMusic = function() {
-            soundManager.stop('marioMusic');
+            SM.stop('marioMusic');
         }
 
         Game.prototype.setAlgorithm = function(a) {
@@ -91,16 +89,18 @@ define([
         /**
 	 * Starts the game loop
 	 */
-        var runGameLoop = function () {
-            update();
-            draw();
-            requestAnimationFrame(runGameLoop);
+        Game.prototype.runGameLoop = function () {
+            if (started) {
+                this.update();
+                this.draw();
+                requestAnimationFrame(this.runGameLoop.bind(this));
+            }
         }
 
         /**
 	 * Updates the game state
 	 */
-        var update = function () {
+        Game.prototype.update = function () {
             if (step === 1) {
                 next = next + 1;
             }
@@ -111,8 +111,7 @@ define([
             }
             //Once finished, stop the loop
             if (next >= path.length) {
-                cancelAnimationFrame(gameLoop);
-                //this.stopMusic();
+                this.stopMusic();
                 started = false;
                 map.drawEnding();
                 next = 1;
@@ -123,7 +122,7 @@ define([
 	 * draws the map and avatar for the current
 	 * game state
 	 */
-        var draw = function () {
+        Game.prototype.draw = function () {
             if (started) {
                 var x0 = path[next-1].x,
                     y0 = path[next-1].y,

@@ -1,47 +1,68 @@
-//Generic publisher object
-//Observer pattern implementation
-//based on JavaScript Patterns (Stefanov,2010)
+/*
+ * Core class to handle all module interactions through
+ * a Publish-Subscribe event system.
+ *
+ * @author Esteban Abait <estebanabait@gmail.com>
+ */
 
 define(function () {
-    
+
     var Publisher = {
-        
-        subscribers: {
-            any: []
-        },
-        
-        subscribe: function(fn, type) {
-            type = type || 'any';
-            if (typeof this.subscribers[type] === 'undefined') {
-                this.subscribers[type] = [];
+
+        subscribe: function(channel, fn, context) {
+            this.channels = this.channels || {};
+
+            if (!this.channels[channel]) {
+                this.channels[channel] = [];
             }
-            this.subscribers[type].push(fn);
+            this.channels[channel].push({
+                context: (context || this),
+                callback: fn
+            });
+
+            return this;
         },
-        
-        unsubscribe: function(fn, type) {
-            this.visitSubscribers('unsubscribe', fn, type);
-        },
-        
-        publish: function(publication, type) {
-            this.visitSubscribers('publish', publication, type);
-        },
-        
-        visitSubscribers: function(action, arg, type) {
-            var pubType = type || 'any',
-            subscribers = this.subscribers[pubType],
-            i,
-            max = subscribers.length;
-            for (i=0; i < max; i+= 1) {
-                if (action === 'publish') {
-                    subscribers[i](arg);
-                } else {
-                    if (subscribers[i] === arg) {
-                        subscribers.splice(i, 1);
-                    }
+
+        unsubscribe: function(channel, fn) {
+            var i, l, elem, list;
+
+            if (!this.channels) {
+                return false;
+            }
+
+            list = this.channels[channel];
+
+            if (!list) {
+                return false;
+            }
+
+            for (i = 0, l = list.length; i < l; i++) {
+                elem = list[i].callback;
+                if (elem === fn) {
+                    list.splice(i);
+                    break;
                 }
             }
+
+            return this;
         },
-        
+
+        publish: function(channel){
+            if (!this.channels || !this.channels[channel]) {
+                return false;
+            }
+
+            //to get any additional parameter passed to the function
+            var args = Array.prototype.slice.call(arguments, 1);
+
+            for (var i = 0, l = this.channels[channel].length; i < l; i++) {
+                var subscription = this.channels[channel][i];
+                subscription.callback.apply(subscription.context, args);
+            }
+
+            return this;
+        },
+
         /**
          * This function is used to copy the Publisher
          * methods to an object o which has to be able
@@ -59,6 +80,6 @@ define(function () {
             };
         }
     };
-    
+
     return Publisher;
 });

@@ -1,29 +1,28 @@
 define([
     'core/config',
-    'graphics/canvaswrapper'
+    'canvaswrapper'
     ],
     function (Config, CanvasWrapper) {
-        var canvas,
-            canvasCtx;
 
-        function GameMenu() {
-            canvas = CanvasWrapper.createBuffer();
-            canvasCtx = canvas.getContext('2d');
+        var GameMenu = {     
+            init : function() {
+                this.canvas = CanvasWrapper.createBuffer();
+                this.canvasCtx = this.canvas.getContext('2d');
+            },
+
+            showProgress : function(p) {
+                this.canvasCtx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+
+                this.canvasCtx.font = Config.textProperties;
+                this.canvasCtx.fillStyle = Config.textColor;
+                this.canvasCtx.fillText('Loading resources', 170, 230);
+
+                this.canvasCtx.fillRect(135, 275, 300 * p, 30);
+                this.canvasCtx.strokeRect(135, 275, 300, 30);
+
+                CanvasWrapper.copyBufferToCanvas(this.canvas, 0, 0);
+            }
         }
-
-        GameMenu.prototype.showProgress = function(p) {
-            canvasCtx.clearRect(0, 0, canvas.width, canvas.height);
-            
-            canvasCtx.font = Config.textProperties;
-            canvasCtx.fillStyle = Config.textColor;
-            canvasCtx.fillText('Loading resources', 170, 230);
-            
-            canvasCtx.fillRect(135, 275, 300 * p, 30);
-            canvasCtx.strokeRect(135, 275, 300, 30);
-
-            CanvasWrapper.copyBufferToCanvas(canvas, 0, 0);
-        };
-
         return GameMenu;
     }
 );

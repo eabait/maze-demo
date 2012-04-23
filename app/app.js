@@ -4,50 +4,51 @@
  */
 define([
     'jquery',
-    'graphics/gamemenu',
+    'soundmanager',
+    'pxloader',
+    'gamemenu',
     'game/game'
     ],
-    function($, GameMenu, Game){
+    function($, SM, PxLoader, GameMenu, Game){
         var init = function() {
             var game = new Game(),
-                loader = new PxLoader(),
-                menu = new GameMenu();
+                loader = new PxLoader();
             
-            menu.showProgress(0);
+            GameMenu.showProgress(0.1);
             
             // initialize the sound manager 
-            soundManager.url = '../swf/'; 
-            soundManager.flashVersion = 9; 
-            soundManager.useHighPerformance = true; // reduces delays 
+            SM.url = '../swf/'; 
+            SM.flashVersion = 9; 
+            SM.useHighPerformance = true; // reduces delays 
 
             // reduce the default 1 sec delay to 500 ms 
-            //soundManager.flashLoadTimeout = 500; 
+            SM.flashLoadTimeout = 500; 
 
             // mp3 is required by default, but we don't want any requirements 
-            soundManager.audioFormats.mp3.required = false; 
+            SM.audioFormats.mp3.required = false; 
             
-            soundManager.useHTML5Audio = true; 
-                soundManager.preferFlash = false; 
-                soundManager.reboot(); 
+            SM.useHTML5Audio = true; 
+            SM.preferFlash = false; 
+            SM.reboot(); 
 
             // flash may timeout if not installed or when flashblock is installed 
-            soundManager.ontimeout(function(status) { 
+            SM.ontimeout(function(status) { 
                 // no flash, go with HTML5 audio 
-                soundManager.useHTML5Audio = true; 
-                soundManager.preferFlash = false; 
-                soundManager.reboot(); 
+                SM.useHTML5Audio = true; 
+                SM.preferFlash = false; 
+                SM.reboot(); 
             }); 
 
-            soundManager.onready(function() { 
+            SM.onready(function() { 
                 var avatar = loader.addImage('img/avatar.png');
-                loader.addSound('marioMusic', 'sound/mario_game.mp3');
+                loader.addSound('marioMusic', 'sound/fresh.ogg.m3u');
      
                 loader.addProgressListener(function(e) { 
-                    menu.showProgress(e.completedCount / e.totalCount);
+                    GameMenu.showProgress(e.completedCount / e.totalCount);
                 });
 
                 loader.addCompletionListener(function() { 
-                    menu.showProgress(100);
+                    GameMenu.showProgress(1);
                     game.loadContent(avatar); 
                 });
 

@@ -16,6 +16,10 @@ define([
             },
             
             createBuffer : function() {
+                if (!this.canvas) {
+                    this.init('canvas');
+                }
+                
                 var canvasBuffer = document.createElement('canvas');
                 canvasBuffer.width = this.canvas.width;
                 canvasBuffer.height = this.canvas.height;

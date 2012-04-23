@@ -1,6 +1,6 @@
 define([
     'core/config',
-    'graphics/canvaswrapper'
+    'canvaswrapper'
     ],
     function(Config, CanvasWrapper) {
         var av = null,

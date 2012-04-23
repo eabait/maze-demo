@@ -8,34 +8,31 @@
 //------------------------------------------------------------------------------
 require.config( {
     paths: {
-        'jquery' : '../libs/jquery-1.7.1',
-        'polyfills' : 'core/es5-polyfills',
-        'pxloader'  : '../libs/PxLoader/PxLoader',
-        'pxloaderimage' : '../libs/PxLoader/PxLoaderImage',
-        'pxloadersound' : '../libs/PxLoader/PxLoaderSound'
+        'jquery' : '../libs/jquery/1.7.2/jquery-1.7.2.min',
+        'soundmanager' : '../libs/soundmanager/soundmanager-wrapper',
+        'pxloader' : '../libs/pxloader/pxloader-wrapper',
+        'canvaswrapper' : '../app/graphics/canvaswrapper',
+        'gamemenu' : '../app/graphics/gamemenu',
+        'polyfills' : 'core/es5-polyfills'
     },
     baseUrl: 'app'
 });
 
+
 require(
     [
-        'order!../libs/soundmanager2',
-        'order!pxloader',
-        'order!pxloaderimage',
-        'order!pxloadersound'
+        'gamemenu',
+        'app',
+        'polyfills'
     ],
-    function() {
-        require(
-            [
-                'domReady',
-                'app',
-                'polyfills'
-            ],
-            function(domReady, app) {
-                domReady(function () {
-                    app.init();
-                });
-            }
-        );
+    function(GameMenu, app) {
+        //domReady(function () {
+            //Show progress message as soon as we can
+            GameMenu.init();
+            GameMenu.showProgress(0);
+
+            //start application
+            app.init();
+        //});
     }
 );

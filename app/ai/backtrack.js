@@ -21,9 +21,9 @@ define(function() {
 	 * 			the ending coord
 	 */
         search: function(grid, sx, sy, ex, ey, path, visited) {
-            if (sx == ex && sy == ey)
+            if (sx == ex && sy == ey) {
                 return path;
-
+            }
             var res;
             //move right
             if (this.canMoveRight(sx, sy, grid, visited)) {
@@ -33,8 +33,9 @@ define(function() {
                 });
                 visited[sx][sy] = 1;
                 res = this.search(grid, sx + 1, sy, ex, ey, path, visited);
-                if (res != null)
+                if (res != null) {
                     return path;
+                }
                 visited[sx][sy] = 0;
                 path.pop();
             }
@@ -46,8 +47,9 @@ define(function() {
                 });
                 visited[sx][sy] = 1;
                 res = this.search(grid, sx - 1, sy, ex, ey, path, visited);
-                if (res != null)
+                if (res != null) {
                     return path;
+                }
                 visited[sx][sy] = 0;
                 path.pop();
             }
@@ -59,8 +61,9 @@ define(function() {
                 });
                 visited[sx][sy] = 1;
                 res = this.search(grid, sx, sy + 1, ex, ey, path, visited);
-                if (res != null)
+                if (res != null) {
                     return path;
+                }
                 visited[sx][sy] = 0;
                 path.pop();
             }
@@ -72,8 +75,9 @@ define(function() {
                 });
                 visited[sx][sy] = 1;
                 res = this.search(grid, sx, sy - 1, ex, ey, path, visited);
-                if (res != null)
+                if (res != null) {
                     return path;
+                }
                 visited[sx][sy] = 0;
                 path.pop();
             }

@@ -10,7 +10,7 @@
 define([
     'jquery',
     'core/config',
-    'graphics/canvaswrapper',
+    'canvaswrapper',
     'graphics/mapfactory',
     'core/publisher'
     ],
@@ -146,12 +146,12 @@ define([
             begin;
             if (pos.x === 1 && pos.y === 0) {
                 begin = [pos.x, pos.y, 18, 17];
-                this.publish(begin, 'startgame');
+                this.publish('startgame', begin);
             }
             else {
                 if (pos.x === 18 && pos.y === 17) {
                     begin = [pos.x, pos.y, 1, 0];
-                    this.publish(begin, 'startgame');
+                    this.publish('startgame', begin);
                 }
             }
         };
